@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:graphqlex/components/user_info.dart';
 import 'package:graphqlex/components/user_label.dart';
+import 'package:graphqlex/pages/forms/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
@@ -74,58 +75,58 @@ class _UserPageState extends State<UserPage> {
 
         final user = result.data["userMe"];
 
-        return Padding(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(top: 24),
-              ),
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(60.0),
-                    child: Image.network(
-                      "https://avatars2.githubusercontent.com/u/11414392?s=460&u=b1ddfd90d908c267ec662c2a372f06cd3aff4d36&v=4",
-                      height: 60,
-                    ),
+        return RefreshIndicator(
+          onRefresh: () async {
+            refetch();
+          },
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(top: 24),
+                ),
+                Text(
+                  user["name"],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                  Padding(padding: EdgeInsets.only(left: 10)),
-                  Column(
-                    children: [
-                      Text(
-                        user["name"],
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Container(
-                        //alinha o texto junto a linha de cima, motivos desconhecidos por estar desalinhado
-                        transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
-                        child: Text(
-                          user["description"],
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
+                ),
+                Text(
+                  user["description"],
+                  style: TextStyle(
+                    color: Colors.white,
                   ),
-                ],
-              ),
-              UserLabel(label: "EMAIL"),
-              UserInfo(data: user["email"], icon: Icons.email),
-              UserLabel(label: "lOCALIZAÇÃO"),
-              UserInfo(data: capitalize(user["city"]), icon: Icons.map),
-              UserLabel(label: "CELULAR"),
-              UserInfo(data: user["cellphone"], icon: Icons.phone),
-              UserLabel(label: "NIVEL DE INGLÊS"),
-              UserInfo(
-                  data: capitalize(user["englishLevel"]),
-                  icon: Icons.translate),
-            ],
+                ),
+                UserLabel(label: "EMAIL"),
+                UserInfo(data: user["email"], icon: Icons.email),
+                UserLabel(label: "LOCALIZAÇÃO"),
+                UserInfo(data: capitalize(user["city"]), icon: Icons.map),
+                UserLabel(label: "CELULAR"),
+                UserInfo(data: user["cellphone"], icon: Icons.phone),
+                UserLabel(label: "NIVEL DE INGLÊS"),
+                UserInfo(
+                    data: capitalize(user["englishLevel"]),
+                    icon: Icons.translate),
+                RaisedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UserEditFormPage(
+                                  cellphone: user["cellphone"],
+                                  city: user["city"],
+                                  description: user["description"],
+                                  englishLevel: user["englishLevel"],
+                                  name: user["name"],
+                                )));
+                  },
+                  child: Text('Editar perfil'),
+                )
+              ],
+            ),
           ),
         );
       },

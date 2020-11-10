@@ -9,7 +9,7 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomePage> {
-  String jwt = '';
+  bool show = false;
 
   List<Widget> slides = items.map((item) {
     if (item['header'] == 'last') {
@@ -28,7 +28,6 @@ class _WelcomeScreenState extends State<WelcomePage> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 30.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Center(
                       child: Text(
@@ -36,7 +35,7 @@ class _WelcomeScreenState extends State<WelcomePage> {
                         style: TextStyle(
                           fontSize: 50.0,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[600],
+                          color: Colors.cyan[600],
                         ),
                       ),
                     ),
@@ -45,15 +44,29 @@ class _WelcomeScreenState extends State<WelcomePage> {
                     ),
                     RaisedButton(
                       onPressed: () {
-                        navigatorKey.currentState.popAndPushNamed('/signin');
+                        navigatorKey.currentState.pushNamed('/signup');
                       },
-                      child: Text('Criar uma conta'),
+                      child: Text(
+                        'Criar uma conta',
+                      ),
+                      color: Colors.cyan[600],
+                      textColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                     RaisedButton(
                       onPressed: () {
-                        navigatorKey.currentState.pushNamed('/signup');
+                        navigatorKey.currentState.pushNamed('/signin');
                       },
-                      child: Text('Já possuo uma conta'),
+                      child: Text(
+                        'Já possuo uma conta',
+                      ),
+                      color: Colors.cyan[800],
+                      textColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                   ],
                 ),
@@ -130,9 +143,16 @@ class _WelcomeScreenState extends State<WelcomePage> {
   void autoLogIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String _jwt = prefs.getString("jwt");
-    setState(() {
-      jwt = _jwt;
-    });
+    if (_jwt != null && _jwt != "") {
+      navigatorKey.currentState.pushNamedAndRemoveUntil(
+        '/home',
+        (Route<dynamic> route) => false,
+      );
+    } else {
+      setState(() {
+        show = true;
+      });
+    }
     return;
   }
 
@@ -144,9 +164,11 @@ class _WelcomeScreenState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // if (jwt != null) {
-    //   Navigator.pushReplacementNamed(context, '/home');
-    // }
+    if (!show) {
+      return Scaffold(
+        backgroundColor: Colors.cyan[800],
+      );
+    }
     return Scaffold(
       body: Container(
         child: Stack(

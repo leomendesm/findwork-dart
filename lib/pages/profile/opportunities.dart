@@ -70,7 +70,10 @@ class _OpportunitiesPageState extends State<OpportunitiesPage> {
         if (opportunities == null || opportunities.isEmpty) {
           return Container(
             child: Center(
-              child: Text("Nenhuma vaga encontrada!"),
+              child: Text(
+                "Nenhuma vaga encontrada!",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           );
         } else {

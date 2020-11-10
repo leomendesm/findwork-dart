@@ -3,16 +3,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import '../../mixins/validation_mixin.dart';
 
-class SignInPage extends StatefulWidget {
+class SignUpPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return SignInPageState();
+    return SignUpPageState();
   }
 }
 
-String userLogin = """
-  mutation userLogin(\$email: String!, \$password: String!) {
-    userLogin(
+String userRegister = """
+  mutation userRegister(\$email: String!, \$password: String!) {
+    userRegister(
       input: {
         email: \$email,
         password: \$password
@@ -21,7 +21,7 @@ String userLogin = """
   }
 """;
 
-class SignInPageState extends State<SignInPage> with ValidationMixin {
+class SignUpPageState extends State<SignUpPage> with ValidationMixin {
   final formkey = GlobalKey<FormState>();
 
   String email = '';
@@ -30,15 +30,14 @@ class SignInPageState extends State<SignInPage> with ValidationMixin {
   Widget build(context) {
     return Mutation(
       options: MutationOptions(
-        documentNode: gql(userLogin),
+        documentNode: gql(userRegister),
         // or do something with the result.data on completion
         onCompleted: (dynamic resultData) async {
-          if (resultData['userLogin'] != null) {
-            print(resultData['userLogin']);
+          if (resultData['userRegister'] != null) {
+            print(resultData['userRegister']);
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            prefs.setString('jwt', resultData['userLogin']);
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                '/home', (Route<dynamic> route) => false);
+            prefs.setString('jwt', resultData['userRegister']);
+            Navigator.popAndPushNamed(context, '/completeprofile');
           }
         },
       ),
@@ -48,7 +47,7 @@ class SignInPageState extends State<SignInPage> with ValidationMixin {
       ) {
         return Scaffold(
           appBar: AppBar(
-            title: Text('Entrar'),
+            title: Text('Cadastre-se'),
             backgroundColor: Colors.cyan[600],
           ),
           body: Container(
@@ -63,11 +62,10 @@ class SignInPageState extends State<SignInPage> with ValidationMixin {
                     margin: EdgeInsets.only(bottom: 20),
                   ),
                   RaisedButton(
-                    child: Text('Entrar'),
+                    child: Text('Cadastrar'),
                     onPressed: () {
                       if (formkey.currentState.validate()) {
                         formkey.currentState.save();
-                        print('email: $email password: $password');
                         runMutation({
                           'email': email,
                           'password': password,

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:graphqlex/pages/forms/historical.dart';
 import 'package:graphqlex/pages/forms/project.dart';
 import 'package:graphqlex/pages/home.dart';
 import 'package:graphqlex/pages/signin/signin.dart';
-// ignore: unused_import
+import 'package:graphqlex/pages/signout/signout.dart';
+import 'package:graphqlex/pages/signup/complete.dart';
+import 'package:graphqlex/pages/signup/signup.dart';
 import 'package:graphqlex/pages/welcome/welcome.dart';
 
 // variável global para criar rota fora do contexto (onboarding)
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 void main() {
+  // setup do graphql
   WidgetsFlutterBinding.ensureInitialized();
 
   final HttpLink link = HttpLink(
@@ -16,6 +20,7 @@ void main() {
     uri: 'http://192.168.100.64:4000/',
   );
 
+  //sistema de caching do graphql, mudar mais pra frente se possível para reduzir as queries
   ValueNotifier<GraphQLClient> client = ValueNotifier(
     GraphQLClient(
       cache: InMemoryCache(),
@@ -27,8 +32,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  //pega o cliente criado no setup e passa para o provider para poder fazer chamadas dentro dos componentes (insere direto no context)
   final ValueNotifier<GraphQLClient> client;
-
   const MyApp({Key key, this.client}) : super(key: key);
 
   @override
@@ -36,18 +41,22 @@ class MyApp extends StatelessWidget {
     return GraphQLProvider(
       client: client,
       child: CacheProvider(
-          child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        navigatorKey: navigatorKey,
-        initialRoute: '/',
-        routes: {
-          //'/': (context) => WelcomePage(),
-          '/': (context) => HomePage(),
-          '/home': (context) => HomePage(),
-          '/signin': (context) => SignInPage(),
-          '/projectform': (context) => ProjectFormPage(),
-        },
-      )),
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          navigatorKey: navigatorKey,
+          initialRoute: '/',
+          routes: {
+            '/': (context) => WelcomePage(),
+            '/home': (context) => HomePage(),
+            '/signin': (context) => SignInPage(),
+            '/signup': (context) => SignUpPage(),
+            '/signout': (context) => SignOutPage(),
+            '/projectform': (context) => ProjectFormPage(),
+            '/historicalform': (context) => HistoricalFormPage(),
+            '/completeprofile': (context) => UserCompletePage(),
+          },
+        ),
+      ),
     );
   }
 }

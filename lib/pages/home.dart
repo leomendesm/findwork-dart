@@ -15,6 +15,21 @@ class HomePage extends StatelessWidget {
         floatingActionButton: SpeedDialButton(),
         appBar: AppBar(
           backgroundColor: Colors.cyan[600],
+          actions: [
+            PopupMenuButton<String>(
+              onSelected: (value) => Navigator.of(context)
+                  .pushNamedAndRemoveUntil(
+                      '/signout', (Route<dynamic> route) => false),
+              itemBuilder: (BuildContext context) {
+                return {'Logout'}.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            ),
+          ],
           bottom: TabBar(
             indicatorColor: Colors.white,
             indicatorWeight: 3,

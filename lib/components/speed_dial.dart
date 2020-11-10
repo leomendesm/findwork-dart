@@ -10,17 +10,11 @@ class SpeedDialButton extends StatelessWidget {
       marginBottom: 20,
       animatedIcon: AnimatedIcons.menu_close,
       animatedIconTheme: IconThemeData(size: 22.0),
-      // this is ignored if animatedIcon is non null
-      // child: Icon(Icons.add),
       visible: true,
-      // If true user is forced to close dial manually
-      // by tapping main button and overlay is not rendered.
       closeManually: false,
       curve: Curves.bounceIn,
       overlayColor: Colors.black,
       overlayOpacity: 0.5,
-      onOpen: () => print('OPENING DIAL'),
-      onClose: () => print('DIAL CLOSED'),
       tooltip: 'Speed Dial',
       heroTag: 'speed-dial-hero-tag',
       backgroundColor: Colors.white,
@@ -40,14 +34,7 @@ class SpeedDialButton extends StatelessWidget {
           backgroundColor: Colors.blue,
           label: 'Adicionar histórico',
           labelStyle: TextStyle(fontSize: 18.0),
-          onTap: () => Navigator.pushNamed(context, '/projectform'),
-        ),
-        SpeedDialChild(
-          child: Icon(Icons.account_circle),
-          backgroundColor: Colors.blue,
-          label: 'Editar perfil',
-          labelStyle: TextStyle(fontSize: 18.0),
-          onTap: () => print('SECOND CHILD'),
+          onTap: () => Navigator.pushNamed(context, '/historicalform'),
         ),
       ],
     );

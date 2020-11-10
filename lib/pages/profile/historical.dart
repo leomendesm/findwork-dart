@@ -77,7 +77,10 @@ class _HistoricalPageState extends State<HistoricalPage> {
         if (historical == null || historical.isEmpty) {
           return Container(
             child: Center(
-              child: Text("Nenhum usuário encontrado!"),
+              child: Text(
+                "Nenhum histórico encontrado!",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           );
         } else {
@@ -86,18 +89,23 @@ class _HistoricalPageState extends State<HistoricalPage> {
             list.add(
               TimelineModel(
                 id: "1",
+                title: "${element['company']} - ${element['job']}",
                 description:
                     "${element['time']['start']} - ${element['time']['end']}",
-                title: "${element['company']} - ${element['job']}",
               ),
             );
           });
-          return TimelineComponent(
-            timelineList: list,
-            lineColor: Colors.white,
-            backgroundColor: Colors.cyan[800],
-            headingColor: Colors.white,
-            descriptionColor: Colors.grey[50],
+          return RefreshIndicator(
+            child: TimelineComponent(
+              timelineList: list,
+              lineColor: Colors.white,
+              backgroundColor: Colors.cyan[800],
+              headingColor: Colors.white,
+              descriptionColor: Colors.grey[50],
+            ),
+            onRefresh: () async {
+              refetch();
+            },
           );
         }
       },
