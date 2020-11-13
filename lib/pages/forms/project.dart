@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
@@ -10,11 +13,13 @@ class ProjectFormPage extends StatefulWidget {
 }
 
 String userLogin = """
-  mutation addProject(\$jwt: String!, \$name: String!, \$description: String!) {
+  mutation addProject(\$jwt: String!, \$name: String!, \$description: String!, \$file: String!, \$extension: String!) {
     addProject(
       jwt: \$jwt,
       name: \$name,
-      description: \$description
+      description: \$description,
+      file: \$file,
+      extension: \$extension,
     ) {
       name
     }
@@ -26,6 +31,8 @@ class ProjectFormPageState extends State<ProjectFormPage> {
 
   String name = '';
   String description = '';
+  File image;
+  final picker = ImagePicker();
 
   String jwt = '';
   void autoLogIn() async {
@@ -41,6 +48,20 @@ class ProjectFormPageState extends State<ProjectFormPage> {
   void initState() {
     super.initState();
     autoLogIn();
+  }
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        setState(() {
+          image = File(pickedFile.path);
+        });
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   Widget build(context) {
@@ -63,35 +84,49 @@ class ProjectFormPageState extends State<ProjectFormPage> {
             title: Text('Criar novo projeto'),
             backgroundColor: Colors.cyan[600],
           ),
-          body: Container(
-            margin: EdgeInsets.all(20),
-            child: Form(
-              key: formkey,
-              child: Column(
-                children: <Widget>[
-                  nameField(),
-                  descriptionField(),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 20),
-                  ),
-                  RaisedButton(
-                    child: Text('Salvar'),
-                    onPressed: () {
-                      if (formkey.currentState.validate()) {
-                        formkey.currentState.save();
-                        print(
-                            'jwt: $jwt name: $name description: $description');
-                        runMutation({
-                          'jwt': jwt,
-                          'name': name,
-                          'description': description,
-                        });
-                      }
-                    },
-                    color: Colors.cyan[600],
-                    textColor: Colors.white,
-                  )
-                ],
+          body: SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.all(20),
+              child: Form(
+                key: formkey,
+                child: Column(
+                  children: <Widget>[
+                    nameField(),
+                    descriptionField(),
+                    Center(
+                      child: image == null
+                          ? Text('No image selected.')
+                          : Image.file(image),
+                    ),
+                    RaisedButton(
+                      onPressed: getImage,
+                      child: Text('Selecionar imagem'),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 20),
+                    ),
+                    RaisedButton(
+                      child: Text('Salvar'),
+                      onPressed: () {
+                        if (formkey.currentState.validate()) {
+                          formkey.currentState.save();
+
+                          var byteData = base64Encode(image.readAsBytesSync());
+                          var ext = image.path.split(".").last;
+                          runMutation({
+                            'jwt': jwt,
+                            'name': name,
+                            'description': description,
+                            'file': byteData,
+                            'extension': ext
+                          });
+                        }
+                      },
+                      color: Colors.cyan[600],
+                      textColor: Colors.white,
+                    )
+                  ],
+                ),
               ),
             ),
           ),

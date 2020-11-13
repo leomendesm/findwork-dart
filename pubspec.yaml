@@ -26,7 +26,6 @@ dependencies:
 
   graphql_flutter: ^3.0.0
   graphql: ^3.0.0
-  google_fonts: ^1.1.0
   intl: ^0.16.1
   cached_network_image: ^2.2.0+1
   shared_preferences: ^0.5.12+2
@@ -34,6 +33,7 @@ dependencies:
   timeline: 0.0.1
   flutter_masked_text: ^0.8.0
   select_form_field: "^1.0.1"
+  image_picker: ^0.6.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3

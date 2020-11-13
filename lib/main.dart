@@ -11,13 +11,14 @@ import 'package:graphqlex/pages/welcome/welcome.dart';
 
 // variável global para criar rota fora do contexto (onboarding)
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
+final ip = 'http://192.168.100.64';
 void main() {
   // setup do graphql
   WidgetsFlutterBinding.ensureInitialized();
 
   final HttpLink link = HttpLink(
     // mudar para o seu ip caso queira rodar localmente
-    uri: 'http://192.168.100.64:4000/',
+    uri: ip + ':4000/',
   );
 
   //sistema de caching do graphql, mudar mais pra frente se possível para reduzir as queries

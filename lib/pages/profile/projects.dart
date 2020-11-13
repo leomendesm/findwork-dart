@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:graphqlex/main.dart';
+import 'package:graphqlex/pages/forms/delete_project.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //classe state da página User
@@ -16,6 +18,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
   query projects(\$jwt: String!) {
     userMe(jwt: \$jwt) {
       projects {
+        id
         name
         description
         photo
@@ -88,6 +91,12 @@ class _ProjectsPageState extends State<ProjectsPage> {
               physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 final project = projects[projects.length - index - 1];
+                Widget leading =
+                    project['photo'] != null && project['photo'] != ''
+                        ? Image.network(ip + ":3000/" + project['photo'])
+                        : FlutterLogo(
+                            size: 50,
+                          );
                 return Column(
                   children: <Widget>[
                     Card(
@@ -95,9 +104,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                       color: Colors.cyan[600],
                       child: ListTile(
                         contentPadding: EdgeInsets.all(20),
-                        leading: FlutterLogo(
-                          size: 50,
-                        ),
+                        leading: leading,
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -121,9 +128,20 @@ class _ProjectsPageState extends State<ProjectsPage> {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                         ),
-                        trailing: Icon(
-                          Icons.delete_forever,
-                          color: Colors.white,
+                        trailing: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => DeleteProjectPage(
+                                  projectId: project['id'],
+                                ),
+                              ),
+                            );
+                          },
+                          child: Icon(
+                            Icons.delete_forever,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
